@@ -20,12 +20,14 @@ h1 { font-size: 1.25rem; color: #333; border-bottom: 2px solid #1a73e8; padding-
 .result.incorrect { background: #fce8e6; border: 1px solid #ea4335; }
 .result.explanation { background: #e8f0fe; border: 1px solid #1a73e8; margin-top: 4px; }
 #submit-btn { background: #1a73e8; color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-top: 8px; }
+.passage-box { background: #e8f4fc; border: 1px solid #1a73e8; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.passage-box .passage-label { font-size: 0.85rem; font-weight: bold; color: #1a73e8; margin-bottom: 8px; }
+.passage-box .passage-text { white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem; }
 </style>
 </head>
 <body>
 <a href="../index.html" class="back">← トップに戻る</a>
 <h1>Part 6: Text Completion（16問）</h1>
-<p style="font-size:0.9rem;color:#666;">パッセージは questions/Part6_TextCompletion.txt を参照してください。</p>
 <div id="score-box"><h2>採点結果</h2><p id="score-text"></p></div>
 <form id="quiz-form"><div id="quiz-container"></div><button type="button" id="submit-btn">答え合わせ</button></form>
 <script src="part6.js"></script>

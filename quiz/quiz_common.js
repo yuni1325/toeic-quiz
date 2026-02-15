@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", function() {
   if (!form || !container) return;
   var frag = document.createDocumentFragment();
   QDATA.forEach(function(q) {
+    if (q.passage) {
+      var passageBox = document.createElement("div");
+      passageBox.className = "passage-box";
+      passageBox.innerHTML = '<div class="passage-label">Reading passage</div><div class="passage-text">' + escapeHtml(q.passage).replace(/\n/g, "<br>") + '</div>';
+      frag.appendChild(passageBox);
+    }
     var block = document.createElement("div");
     block.className = "q-block";
     block.setAttribute("data-num", q.num);
