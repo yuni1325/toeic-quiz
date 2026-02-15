@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>間違えた問題の振り返り - TOEIC 模擬試験</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", "Meiryo", sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; background: #f5f5f5; }
+h1 { font-size: 1.25rem; color: #333; border-bottom: 2px solid #1a73e8; padding-bottom: 8px; }
+.back { display: inline-block; margin-bottom: 16px; color: #1a73e8; text-decoration: none; }
+.empty { background: #fff; padding: 24px; border-radius: 8px; text-align: center; color: #666; }
+.card { background: #fff; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.card .meta { font-size: 0.85rem; color: #666; margin-bottom: 8px; }
+.card .q-num { font-weight: bold; color: #1a73e8; }
+.card .q-desc { white-space: pre-wrap; margin: 8px 0 12px; line-height: 1.6; }
+.card .passage-box { background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 8px 0; font-size: 0.9rem; white-space: pre-wrap; }
+.card .options { margin: 8px 0; }
+.card .options span { display: block; padding: 4px 0; }
+.card .options .correct { color: #0d652d; font-weight: bold; }
+.card .options .wrong { color: #c5221f; }
+.card .result { padding: 12px; border-radius: 8px; margin-top: 8px; font-size: 0.9rem; }
+.card .result.incorrect { background: #fce8e6; border: 1px solid #ea4335; }
+.card .result.explanation { background: #e8f0fe; border: 1px solid #1a73e8; margin-top: 4px; }
+.btn { background: #1a73e8; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-top: 16px; }
+.btn:hover { background: #1557b0; }
+.btn.danger { background: #c5221f; }
+.btn.danger:hover { background: #a01815; }
+#list { margin-top: 16px; }
+</style>
+</head>
+<body>
+<a href="index.html" class="back">← トップに戻る</a>
+<h1>間違えた問題の振り返り</h1>
+<p>模擬試験で間違えた問題を一覧で確認できます。記録をクリアするには下のボタンを使用してください。</p>
+<div id="list"></div>
+<button type="button" class="btn danger" id="clear-btn" style="display:none;">記録をすべてクリアする</button>
+<script>
+var STORAGE_KEY = "toeic_wrong_answers";
+function escapeHtml(s) {
+  if (!s) return "";
+  var div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
+}
+function loadReview() {
+  var raw = localStorage.getItem(STORAGE_KEY);
+  var list = raw ? JSON.parse(raw) : [];
+  var container = document.getElementById("list");
+  var clearBtn = document.getElementById("clear-btn");
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty">記録された間違えた問題はありません。模擬試験で答え合わせをすると、ここに表示されます。</div>';
+    clearBtn.style.display = "none";
+    return;
+  }
+  clearBtn.style.display = "inline-block";
+  container.innerHTML = "";
+  list.forEach(function(item, index) {
+    var card = document.createElement("div");
+    card.className = "card";
+    var examLabel = item.exam === "quiz" ? "模擬試験1" : "模擬試験" + item.exam.replace("exam", "");
+    var partLabel = "Part " + item.part.replace("part", "");
+    card.innerHTML = '<div class="meta">' + escapeHtml(examLabel) + ' · ' + escapeHtml(partLabel) + ' · Question ' + item.num + (item.date ? ' · ' + item.date.slice(0, 10) : '') + '</div>' +
+      '<div class="q-num">Question ' + item.num + '</div>' +
+      '<div class="q-desc">' + escapeHtml(item.desc) + '</div>';
+    if (item.passage) {
+      var passageBox = document.createElement("div");
+      passageBox.className = "passage-box";
+      passageBox.innerHTML = escapeHtml(item.passage).replace(/\n/g, "<br>");
+      card.appendChild(passageBox);
+    }
+    if (item.options && item.options.length > 0) {
+      var optDiv = document.createElement("div");
+      optDiv.className = "options";
+      item.options.forEach(function(opt) {
+        var span = document.createElement("span");
+        span.innerHTML = "(" + escapeHtml(opt.letter) + ") " + escapeHtml(opt.text);
+        if (opt.letter === item.correct) span.classList.add("correct");
+        if (opt.letter === item.userAnswer && item.userAnswer !== item.correct) span.classList.add("wrong");
+        optDiv.appendChild(span);
+      });
+      card.appendChild(optDiv);
+    }
+    var wrongDiv = document.createElement("div");
+    wrongDiv.className = "result incorrect";
+    wrongDiv.textContent = "あなたの答え: " + (item.userAnswer || "未回答") + " → 正答: " + item.correct;
+    card.appendChild(wrongDiv);
+    var expDiv = document.createElement("div");
+    expDiv.className = "result explanation";
+    expDiv.textContent = "解説: " + item.explanation;
+    card.appendChild(expDiv);
+    container.appendChild(card);
+  });
+}
+document.getElementById("clear-btn").addEventListener("click", function() {
+  if (confirm("記録された間違えた問題をすべて削除しますか？")) {
+    localStorage.removeItem(STORAGE_KEY);
+    loadReview();
+  }
+});
+loadReview();
+</script>
+</body>
+</html>
